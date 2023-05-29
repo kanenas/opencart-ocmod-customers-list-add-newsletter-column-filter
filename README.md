@@ -1,2 +1,3 @@
-# opencart-ocmod-customers-list-add-newsletter-column-filter
-Customers list > Add newsletter column &amp; filter
+# Customers list > Add newsletter column &amp; filter
+
+**Opencart**: v2.3.0.2  
