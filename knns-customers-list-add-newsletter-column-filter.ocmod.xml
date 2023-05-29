@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<id><![CDATA[Customers list > Add newsletter column & filter]]></id>
+	<name><![CDATA[Customers list > Add newsletter column & filter]]></name>
+	<code>knns-customers-list-add-newsletter-column-filter</code>
+	<version>0.1.0</version>
+	<author><![CDATA[<font color="#7F458C"><b>kanenas.net (aka Nikolas Branis)</b></font> - nbran@kanenas.net]]></author>
+	<link>https://kanenas.net/</link>
+	<file path="admin/language/*/customer/customer.php">
+		<operation>
+			<search><![CDATA[// Entry]]></search>
+			<add position="after"><![CDATA[
+$_['column_newsletter']     = 'Newsletter';
+//$_['entry_newsletter']      = 'Newsletter';
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/controller/customer/customer.php">
+		<operation>
+			<search index="6"><![CDATA[if (isset($this->request->get['filter_ip'])) {]]></search>
+			<add position="before"><![CDATA[
+		if (isset($this->request->get['filter_newsletter'])) {
+			$filter_newsletter = $this->request->get['filter_newsletter'];
+		} else {
+			$filter_newsletter = null;
+		}
+			]]></add>
+		</operation>
+		<operation>
+			<search index="7"><![CDATA[if (isset($this->request->get['filter_ip'])) {]]></search>
+			<add position="before"><![CDATA[
+		if (isset($this->request->get['filter_newsletter'])) {
+			$url .= '&filter_newsletter=' . $this->request->get['filter_newsletter'];
+		}
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA['filter_approved'          => $filter_approved,]]></search>
+			<add position="before"><![CDATA[			'filter_newsletter'        => $filter_newsletter,]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[				'ip'             => $result['ip'],]]></search>
+			<add position="before"><![CDATA[				'newsletter' => ($result['newsletter'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['column_approved'] = $this->language->get('column_approved');]]></search>
+			<add position="before"><![CDATA[
+		$data['column_newsletter'] = $this->language->get('column_newsletter');
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['entry_approved'] = $this->language->get('entry_approved');]]></search>
+			<add position="before"><![CDATA[
+		$data['entry_newsletter'] = $this->language->get('entry_newsletter');
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[if ($order == 'ASC') {]]></search>
+			<add position="before"><![CDATA[
+		if (isset($this->request->get['filter_newsletter'])) {
+			$url .= '&filter_newsletter=' . $this->request->get['filter_newsletter'];
+		}
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['sort_ip'] = $this->url->link('customer/customer', 'token=' . $this->session->data['token'] . '&sort=c.ip' . $url, true);]]></search>
+			<add position="before"><![CDATA[
+		$data['sort_newsletter'] = $this->url->link('customer/customer', 'token=' . $this->session->data['token'] . '&sort=c.newsletter' . $url, true);
+			]]></add>
+		</operation>
+		<operation>
+			<search index="1"><![CDATA[		$pagination = new Pagination();]]></search>
+			<add position="before"><![CDATA[
+		if (isset($this->request->get['filter_newsletter'])) {
+			$url .= '&filter_newsletter=' . $this->request->get['filter_newsletter'];
+		}
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['filter_approved'] = $filter_approved;]]></search>
+			<add position="before"><![CDATA[
+		$data['filter_newsletter'] = $filter_newsletter;
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/customer/customer_list.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-filter"></i> <?php echo $button_filter; ?></button>]]></search>
+			<add position="before"><![CDATA[
+              <div class="form-group">
+                <label class="control-label" for="input-newsletter"><?php echo $entry_newsletter; ?></label>
+                <select name="filter_newsletter" id="input-newsletter" class="form-control">
+                  <option value="*"></option>
+                  <?php if ($filter_newsletter) { ?>
+                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                  <?php } else { ?>
+                  <option value="1"><?php echo $text_enabled; ?></option>
+                  <?php } ?>
+                  <?php if (!$filter_newsletter && !is_null($filter_newsletter)) { ?>
+                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                  <?php } else { ?>
+                  <option value="0"><?php echo $text_disabled; ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<td class="text-left"><?php if ($sort == 'c.ip') { ?>]]></search>
+			<add position="before"><![CDATA[
+                  <td class="text-left"><?php if ($sort == 'c.newsletter') { ?>
+                    <a href="<?php echo $sort_newsletter; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_newsletter; ?></a>
+                    <?php } else { ?>
+                    <a href="<?php echo $sort_newsletter; ?>"><?php echo $column_newsletter; ?></a>
+                    <?php } ?></td>
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<td class="text-left"><?php echo $customer['ip']; ?></td>]]></search>
+			<add position="before"><![CDATA[
+                  <td class="text-left"><?php echo $customer['newsletter']; ?></td>
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[var filter_approved = $('select[name=\'filter_approved\']').val();]]></search>
+			<add position="before"><![CDATA[
+	var filter_newsletter = $('select[name=\'filter_newsletter\']').val();
+	
+	if (filter_newsletter != '*') {
+		url += '&filter_newsletter=' + encodeURIComponent(filter_newsletter); 
+	}
+			]]></add>
+		</operation>
+	</file>
+</modification>
